@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { X, Smartphone, ArrowRight, Lock } from 'lucide-react';
+import { X, Smartphone, ArrowRight, Lock, Loader2 } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { sendOtp, verifyOtp, clearError } from '../store/slices/authSlice';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLoginSuccess: (phone: string) => void;
+  onLoginSuccess?: () => void;
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
+  const dispatch = useAppDispatch();
+  const { isLoading, error, otpSent } = useAppSelector((state) => state.auth);
+
   const [step, setStep] = useState<'PHONE' | 'OTP'>('PHONE');
   const [phone, setPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('91');
   const [otp, setOtp] = useState(['', '', '', '']);
 
   useEffect(() => {
@@ -17,15 +23,31 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
       setStep('PHONE');
       setPhone('');
       setOtp(['', '', '', '']);
+      dispatch(clearError());
     }
-  }, [isOpen]);
+  }, [isOpen, dispatch]);
+
+  useEffect(() => {
+    if (otpSent) {
+      setStep('OTP');
+    }
+  }, [otpSent]);
 
   if (!isOpen) return null;
 
-  const handlePhoneSubmit = (e: React.FormEvent) => {
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (phone.length >= 10) {
-      setStep('OTP');
+      try {
+        await dispatch(sendOtp({
+          country_code: Number(countryCode),
+          phone: phone,
+          source: '',
+          referral: ''
+        })).unwrap();
+      } catch (err) {
+        console.error('Failed to send OTP:', err);
+      }
     }
   };
 
@@ -42,10 +64,20 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
     }
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     if (otp.join('').length === 4) {
-      onLoginSuccess(phone);
-      onClose();
+      try {
+        await dispatch(verifyOtp({
+          phone: phone,
+          country_code: countryCode,
+          otp: otp.join('')
+        })).unwrap();
+
+        onLoginSuccess?.();
+        onClose();
+      } catch (err) {
+        console.error('Failed to verify OTP:', err);
+      }
     }
   };
 
@@ -60,7 +92,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-red to-orange-500"></div>
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-brand-red/20 rounded-full blur-2xl pointer-events-none"></div>
 
-        <button 
+        <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
         >
@@ -70,12 +102,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
         <h2 className="text-2xl font-bold font-display text-white mb-2">
           {step === 'PHONE' ? 'Welcome Fan!' : 'Verify OTP'}
         </h2>
-        <p className="text-gray-400 text-sm mb-6">
-          {step === 'PHONE' 
-            ? 'Enter your mobile number to get the stadium experience.' 
+        <p className="text-gray-400 text-sm mb-4">
+          {step === 'PHONE'
+            ? 'Enter your mobile number to get the stadium experience.'
             : `Enter the 4-digit code sent to ${phone}`
           }
         </p>
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+            {error}
+          </div>
+        )}
 
         {step === 'PHONE' ? (
           <form onSubmit={handlePhoneSubmit}>
@@ -88,15 +127,25 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
                 placeholder="Mobile Number"
                 className="w-full bg-black/50 border border-gray-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red transition-all"
                 autoFocus
+                disabled={isLoading}
               />
             </div>
             <button
               type="submit"
-              disabled={phone.length < 10}
+              disabled={phone.length < 10 || isLoading}
               className="w-full bg-brand-red hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl flex items-center justify-center space-x-2 transition-all shadow-lg shadow-red-900/20"
             >
-              <span>Get OTP</span>
-              <ArrowRight size={18} />
+              {isLoading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  <span>Sending...</span>
+                </>
+              ) : (
+                <>
+                  <span>Get OTP</span>
+                  <ArrowRight size={18} />
+                </>
+              )}
             </button>
           </form>
         ) : (
@@ -111,20 +160,31 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
                   value={digit}
                   onChange={(e) => handleOtpChange(index, e.target.value)}
                   className="w-16 h-16 bg-black/50 border border-gray-700 rounded-xl text-center text-2xl font-bold text-white focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red transition-all"
+                  disabled={isLoading}
                 />
               ))}
             </div>
             <button
               onClick={handleVerify}
-              disabled={otp.join('').length !== 4}
+              disabled={otp.join('').length !== 4 || isLoading}
               className="w-full bg-brand-red hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl flex items-center justify-center space-x-2 transition-all shadow-lg shadow-red-900/20 mb-4"
             >
-              <Lock size={18} />
-              <span>Verify & Login</span>
+              {isLoading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  <span>Verifying...</span>
+                </>
+              ) : (
+                <>
+                  <Lock size={18} />
+                  <span>Verify & Login</span>
+                </>
+              )}
             </button>
-            <button 
+            <button
               onClick={() => setStep('PHONE')}
               className="w-full text-center text-gray-400 hover:text-white text-sm"
+              disabled={isLoading}
             >
               Change Phone Number
             </button>

@@ -1,38 +1,66 @@
-import React, { useState } from 'react';
-import { User, Menu, X, LogIn } from 'lucide-react';
-import { User as UserType } from '../types';
+import React, { useState, useRef, useEffect } from 'react';
+import { User, Menu, X, LogIn, UserCircle, Ticket, ChevronDown, LogOut } from 'lucide-react';
+import { useAppSelector, useAppDispatch } from '../store/hooks';
+import { logout } from '../store/slices/authSlice';
 
 interface NavbarProps {
-  user: UserType | null;
   onLoginClick: () => void;
   onNavigate: (page: string) => void;
   currentPage: string;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ user, onLoginClick, onNavigate, currentPage }) => {
+const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onNavigate, currentPage }) => {
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
   const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
     { name: 'Home', value: 'home' },
     { name: 'Events', value: 'events' },
-    { name: 'Organizer', value: 'organizer' },
+    // { name: 'Organizer', value: 'organizer' },
     { name: 'About', value: 'about' },
   ];
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   const handleNav = (val: string) => {
     onNavigate(val);
     setIsOpen(false);
-  }
+    setIsDropdownOpen(false);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    setIsDropdownOpen(false);
+    onNavigate('home');
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-black/80 backdrop-blur-md border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          
+
           {/* Logo */}
           <div className="flex-shrink-0 cursor-pointer" onClick={() => handleNav('home')}>
             <h1 className="font-display text-3xl font-bold tracking-wider text-white">
-              WHAT<span className="text-brand-red">THE</span>FOOTBALL
+              WHA<span className="text-brand-red">THE</span>FOOTBALL
             </h1>
           </div>
 
@@ -52,11 +80,54 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLoginClick, onNavigate, current
           </div>
 
           {/* Auth Button */}
-          <div className="hidden md:block">
-            {user && user.isAuthenticated ? (
-              <div className="flex items-center space-x-2 text-white bg-brand-gray px-4 py-2 rounded-full border border-white/10">
-                <User size={18} className="text-brand-red" />
-                <span className="text-sm font-semibold">{user.phone}</span>
+          <div className="hidden md:block relative">
+            {isAuthenticated && user ? (
+              <div ref={dropdownRef}>
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center space-x-2 text-white bg-brand-gray px-4 py-2 rounded-full border border-white/10 hover:border-brand-red transition-all"
+                >
+                  <UserCircle size={20} className="text-brand-red" />
+                  <span className="text-sm font-semibold">{user.first_name || user.phone}</span>
+                  <ChevronDown size={16} className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Dropdown Menu */}
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-[#111] border border-gray-800 rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="py-2">
+                      {/* Profile Option */}
+                      <button
+                        onClick={() => handleNav('profile')}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-brand-red/10 hover:text-white transition-colors group"
+                      >
+                        <UserCircle size={18} className="text-brand-red group-hover:text-white transition-colors" />
+                        <span className="font-medium">Profile</span>
+                      </button>
+
+                      {/* Bookings Option */}
+                      <button
+                        onClick={() => handleNav('bookings')}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-brand-red/10 hover:text-white transition-colors group"
+                      >
+                        <Ticket size={18} className="text-brand-red group-hover:text-white transition-colors" />
+                        <span className="font-medium">My Bookings</span>
+                      </button>
+
+                      {/* Divider */}
+                      <div className="my-1 border-t border-gray-800"></div>
+
+                      {/* Logout Option */}
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-red-500/10 hover:text-red-400 transition-colors group"
+                      >
+                        <LogOut size={18} className="text-brand-red group-hover:text-red-400 transition-colors" />
+                        <span className="font-medium">Logout</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <button
@@ -85,30 +156,42 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLoginClick, onNavigate, current
       {isOpen && (
         <div className="md:hidden bg-black border-b border-brand-red/30">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-             {navLinks.map((link) => (
-                <button
-                  key={link.name}
-                  onClick={() => handleNav(link.value)}
-                  className="text-gray-300 hover:text-brand-red block px-3 py-2 rounded-md text-base font-medium w-full text-left"
-                >
-                  {link.name}
-                </button>
-              ))}
-             <div className="pt-4 border-t border-gray-800">
-               {user && user.isAuthenticated ? (
-                  <div className="flex items-center px-3 py-2 text-white">
-                    <User size={18} className="mr-2 text-brand-red" />
-                    <span>{user.phone}</span>
-                  </div>
-                ) : (
+            {navLinks.map((link) => (
+              <button
+                key={link.name}
+                onClick={() => handleNav(link.value)}
+                className="text-gray-300 hover:text-brand-red block px-3 py-2 rounded-md text-base font-medium w-full text-left"
+              >
+                {link.name}
+              </button>
+            ))}
+            <div className="pt-4 border-t border-gray-800">
+              {isAuthenticated && user ? (
+                <>
                   <button
-                    onClick={() => { onLoginClick(); setIsOpen(false); }}
-                    className="w-full text-center bg-brand-red text-white px-4 py-3 rounded-md font-bold"
+                    onClick={() => handleNav('profile')}
+                    className="flex items-center px-3 py-2 text-white w-full hover:text-brand-red"
                   >
-                    LOGIN
+                    <UserCircle size={18} className="mr-2 text-brand-red" />
+                    <span>{user.first_name || user.phone}</span>
                   </button>
-                )}
-             </div>
+                  <button
+                    onClick={() => handleNav('bookings')}
+                    className="flex items-center px-3 py-2 text-gray-300 w-full hover:text-brand-red mt-2"
+                  >
+                    <Ticket size={18} className="mr-2" />
+                    <span>My Bookings</span>
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => { onLoginClick(); setIsOpen(false); }}
+                  className="w-full text-center bg-brand-red text-white px-4 py-3 rounded-md font-bold"
+                >
+                  LOGIN
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}

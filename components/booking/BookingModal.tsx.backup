@@ -1,0 +1,228 @@
+import React, { useState, useEffect } from 'react';
+import { BookingStep } from '../../types';
+import { Event, eventDetailAPI, EventDetailResponse, bookingAPI, CheckoutPayload, ConfirmBookingPayload, ConfirmBookingResponse } from '../../api';
+import { X, Calendar, MapPin, CheckCircle, CreditCard, Loader2, Download } from 'lucide-react';
+import TicketSelector, { SelectedTicket } from './TicketSelector';
+import { downloadTicket, TicketData } from '../../utils/ticketDownload';
+
+// Declare Razorpay on window
+declare global {
+    interface Window {
+        Razorpay: any;
+    }
+}
+
+interface BookingModalProps {
+    event: Event | null;
+    onClose: () => void;
+    userPhone: string;
+}
+
+const BookingModal: React.FC<BookingModalProps> = ({ event, onClose, userPhone }) => {
+    const [step, setStep] = useState<BookingStep>(BookingStep.DETAILS);
+    const [selectedTickets, setSelectedTickets] = useState<SelectedTicket[]>([]);
+    const [eventDetail, setEventDetail] = useState<EventDetailResponse['data'] | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [checkoutData, setCheckoutData] = useState<any>(null);
+    const [confirmedBooking, setConfirmedBooking] = useState<ConfirmBookingResponse['data'] | null>(null);
+
+    useEffect(() => {
+        if (event) {
+            setStep(BookingStep.DETAILS);
+            setSelectedTickets([]);
+            fetchEventDetails(event._id);
+        } else {
+            setEventDetail(null);
+        }
+    }, [event]);
+
+    const fetchEventDetails = async (eventId: string) => {
+        try {
+            setIsLoading(true);
+            setError(null);
+            const response = await eventDetailAPI.getEventDetail(eventId);
+            if (response.status) {
+                setEventDetail(response.data);
+            }
+        } catch (err: any) {
+            setError('Failed to load event details');
+            console.error(err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    if (!event) return null;
+
+    const eventDate = new Date(event.date_time * 1000);
+    const dateStr = eventDate.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric'
+    });
+    const timeStr = eventDate.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    const image = event.event_images.length > 0
+        ? event.event_images[0].image
+        : 'https://via.placeholder.com/400x200?text=No+Image';
+
+    // Price Calculations
+    const getNetPrice = (): number => {
+        return selectedTickets.reduce((sum, ticket) =>
+            sum + (ticket.price * ticket.quantity), 0
+        );
+    };
+
+    const getPlatformFee = (): number => {
+        if (!eventDetail) return 0;
+        const netPrice = getNetPrice();
+        return netPrice * (eventDetail.admin_platform_fee / 100);
+    };
+
+    const getGST = (): number => {
+        const platformFee = getPlatformFee();
+        return platformFee * 0.12;
+    };
+
+    const getTotalPrice = (): number => {
+        return getNetPrice() + getPlatformFee() + getGST();
+    };
+
+    const getTotalTickets = (): number => {
+        return selectedTickets.reduce((sum, ticket) => sum + ticket.quantity, 0);
+    };
+
+    const handleNext = () => {
+        if (step === BookingStep.DETAILS) {
+            setStep(BookingStep.SEATS);
+        } else if (step === BookingStep.SEATS) {
+            if (selectedTickets.length === 0) {
+                alert('Please select at least one ticket');
+                return;
+            }
+            setStep(BookingStep.CHECKOUT);
+        } else if (step === BookingStep.CHECKOUT) {
+            processPayment();
+        }
+    };
+
+    const processPayment = async () => {
+        if (!eventDetail) return;
+
+        setStep(BookingStep.PROCESSING);
+
+        try {
+            const payload: CheckoutPayload = {
+                event_id: event._id,
+                normal_ticket_count: 0,
+                event_ticket_type: selectedTickets.map(t => ({
+                    price_type_id: t.ticketId,
+                    selected_count: t.quantity,
+                    question: []
+                })),
+                price_brackdown: {
+                    net_price: getNetPrice(),
+                    tax: getGST(),
+                    applied_coupon_discount: 0,
+                    total_price: getTotalPrice()
+                },
+                applied_coupon_id: ""
+            };
+
+            console.log('Checkout Payload:', payload);
+            const response = await bookingAPI.checkout(payload);
+            console.log('Checkout Response:', response);
+
+            if (response.status) {
+                setCheckoutData(response.data);
+                initiateRazorpay(response);
+            } else {
+                alert('Checkout failed: ' + response.message);
+                setStep(BookingStep.CHECKOUT);
+            }
+
+        } catch (error) {
+            console.error('Checkout Error:', error);
+            alert('Checkout failed. Please try again.');
+            setStep(BookingStep.CHECKOUT);
+        }
+    };
+
+    const confirmBooking = async (razorpayResponse: any) => {
+        if (!checkoutData)
+            return;
+
+        console.log("Confirming booking:", razorpayResponse);
+
+        try {
+            const payload: ConfirmBookingPayload = {
+                event_booking_id: checkoutData._id,
+                payment_method: "Razorpay",
+                payment_amount: checkoutData.amount.toString(),
+                transaction_id: razorpayResponse.razorpay_payment_id,
+                payment_status: 2 // 2 = success
+            };
+
+            console.log('Confirming booking:', payload);
+            const response = await bookingAPI.confirmBooking(payload);
+            console.log('Booking confirmed:', response);
+
+            if (response.status) {
+                setConfirmedBooking(response.data);
+                setStep(BookingStep.SUCCESS);
+            } else {
+                alert('Booking confirmation failed: ' + response.message);
+                setStep(BookingStep.CHECKOUT);
+            }
+        } catch (error) {
+            console.error('Booking confirmation error:', error);
+            alert('Failed to confirm booking. Please contact support.');
+            setStep(BookingStep.CHECKOUT);
+        }
+    };
+
+    const initiateRazorpay = (checkoutResponse: any) => {
+        console.log('Initiating Razorpay with:', checkoutResponse);
+
+        const { data } = checkoutResponse;
+
+        const options = {
+            key: "rzp_test_8AoW78tTxWoLfR",
+            amount: Math.round(data.amount * 100), // Convert to paise
+            currency: "INR",
+            name: "WhaTheFootball",
+            description: "Event Ticket Purchase",
+            order_id: data.transaction_id,
+            theme: { color: "#ff0f37" },
+
+            handler: async function (response: any) {
+                console.log("Payment Success!", response);
+                console.log("Payment ID:", response.razorpay_payment_id);
+                console.log("Order ID:", response.razorpay_order_id);
+                console.log("Signature:", response.razorpay_signature);
+
+                // Confirm booking after successful payment
+                await confirmBooking(response);
+                console.log("Booking confirmed initiated", response);
+            },
+
+            prefill: {
+                name: userPhone,
+                contact: userPhone,
+            },
+
+            modal: {
+                ondismiss: function () {
+                    console.log('Payment cancelled by user');
+                    setStep(BookingStep.CHECKOUT);
+                }
+            }
+        };
+
+    };
+
+    export default BookingModal;
