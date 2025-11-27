@@ -1,0 +1,7 @@
+{
+  "name": "WhatTheFOOTBALL",
+  "description": "A premium football engagement platform bringing the stadium roar to your door. Features event booking, fan engagement, and AI-powered assistance.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
