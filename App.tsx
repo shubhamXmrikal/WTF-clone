@@ -68,19 +68,18 @@ const App: React.FC = () => {
                 Join the ultimate football community. Book tickets, play fantasy leagues, and engage with fans worldwide.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                <button onClick={() => window.open('https://play.google.com/store/apps/details?id=com.whathefootball&hl=en_IN', '_blank')} className="flex items-center justify-center gap-3 bg-[#1a1a1a] border border-gray-700 hover:border-brand-red px-6 py-3 rounded-xl transition-all w-full sm:w-auto">
-                  <Download className="text-brand-red" />
-                  <div className="text-left">
-                    <div className="text-xs text-gray-400">GET IT ON</div>
-                    <div className="font-bold">Google Play</div>
-                  </div>
-                </button>
-                <button onClick={() => window.open('https://apps.apple.com/in/app/wtf-whathefootball/id6479007740', '_blank')} className="flex items-center justify-center gap-3 bg-[#1a1a1a] border border-gray-700 hover:border-brand-red px-6 py-3 rounded-xl transition-all w-full sm:w-auto">
-                  <Download className="text-brand-red" />
-                  <div className="text-left">
-                    <div className="text-xs text-gray-400">Download on the</div>
-                    <div className="font-bold">App Store</div>
+              <div className="flex justify-center md:justify-start">
+                <button
+                  onClick={() => setCurrentPage('events')}
+                  className="animated-border-btn group cursor-pointer"
+                >
+                  <div className="animated-border-btn-inner px-10 py-5 flex flex-col items-center justify-center">
+                    <span className="text-2xl md:text-3xl font-display font-bold text-white group-hover:text-brand-red transition-colors">
+                      Book Your First Event
+                    </span>
+                    <span className="text-sm text-gray-400 mt-1">
+                      Join the stadium experience today!
+                    </span>
                   </div>
                 </button>
               </div>
@@ -92,6 +91,55 @@ const App: React.FC = () => {
             </div>
           </div>
         </header>
+
+        {/* Download App Section */}
+        <section className="py-20 bg-gradient-to-b from-black via-[#0a0a0a] to-black relative">
+          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-red to-transparent opacity-30"></div>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">
+                Get the <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-red to-orange-500">WhaTheFOOTBALL</span> App
+              </h2>
+              <p className="text-gray-400 text-lg">Download now and never miss a match!</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {/* Google Play Button */}
+              <button
+                onClick={() => window.open('https://play.google.com/store/apps/details?id=com.whathefootball&hl=en_IN', '_blank')}
+                className="group relative overflow-hidden bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border-2 border-gray-800 hover:border-brand-red rounded-2xl p-8 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,0,51,0.3)]"
+              >
+                <div className="flex items-center gap-6">
+                  <div className="w-20 h-20 bg-gradient-to-br from-brand-red to-orange-500 rounded-2xl flex items-center justify-center shadow-lg">
+                    <Download size={40} className="text-white" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <div className="text-sm text-gray-400 mb-1">GET IT ON</div>
+                    <div className="text-3xl font-display font-bold text-white group-hover:text-brand-red transition-colors">Google Play</div>
+                    <div className="text-xs text-gray-500 mt-1">Available for Android</div>
+                  </div>
+                </div>
+              </button>
+
+              {/* App Store Button */}
+              <button
+                onClick={() => window.open('https://apps.apple.com/in/app/wtf-whathefootball/id6479007740', '_blank')}
+                className="group relative overflow-hidden bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border-2 border-gray-800 hover:border-brand-red rounded-2xl p-8 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,0,51,0.3)]"
+              >
+                <div className="flex items-center gap-6">
+                  <div className="w-20 h-20 bg-gradient-to-br from-brand-red to-orange-500 rounded-2xl flex items-center justify-center shadow-lg">
+                    <Download size={40} className="text-white" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <div className="text-sm text-gray-400 mb-1">Download on the</div>
+                    <div className="text-3xl font-display font-bold text-white group-hover:text-brand-red transition-colors">App Store</div>
+                    <div className="text-xs text-gray-500 mt-1">Available for iOS</div>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </section>
 
         {/* About Us */}
         <section className="py-20 bg-black">
@@ -138,7 +186,10 @@ const App: React.FC = () => {
                 Get ready for a football experience like never before! From interactive pre-match zones to exclusive player meet-and-greets, we're bringing the game closer to you. Join the global fan community through engaging social media challenges and live Q&A sessions.
               </p>
               <div className="flex gap-4">
-                <button className="bg-brand-red text-white px-8 py-3 rounded-full font-bold hover:bg-red-700 transition-all">
+                <button
+                  onClick={() => window.open('https://play.google.com/store/apps/details?id=com.whathefootball&hl=en_IN', '_blank')}
+
+                  className="bg-brand-red text-white px-8 py-3 rounded-full font-bold hover:bg-red-700 transition-all">
                   Join Community
                 </button>
               </div>

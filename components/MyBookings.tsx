@@ -204,19 +204,19 @@ const MyBookings: React.FC<MyBookingsProps> = ({ userId }) => {
                                             <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
                                                 <Calendar size={14} className="text-brand-red" />
                                             </div>
-                                            <span className="text-sm font-medium">{formatDate(booking.event_detail.date_time)}</span>
+                                            <span className="text-sm font-medium">{formatDate(booking?.event_detail?.date_time)}</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-gray-400">
                                             <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
                                                 <Clock size={14} className="text-brand-red" />
                                             </div>
-                                            <span className="text-sm font-medium">{formatTime(booking.event_detail.date_time)}</span>
+                                            <span className="text-sm font-medium">{formatTime(booking?.event_detail?.date_time)}</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-gray-400">
                                             <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
                                                 <MapPin size={14} className="text-brand-red" />
                                             </div>
-                                            <span className="text-sm font-medium line-clamp-1">{booking.event_detail.location}</span>
+                                            <span className="text-sm font-medium line-clamp-1">{booking?.event_detail?.location}</span>
                                         </div>
                                     </div>
 
@@ -277,20 +277,20 @@ const MyBookings: React.FC<MyBookingsProps> = ({ userId }) => {
                         {/* Event Image Header */}
                         <div className="relative h-64">
                             <img
-                                src={selectedBooking.event_images[0]?.image || 'https://via.placeholder.com/800x400?text=Event'}
-                                alt={selectedBooking.event_detail.event_name}
+                                src={selectedBooking?.event_images[0]?.image || 'https://via.placeholder.com/800x400?text=Event'}
+                                alt={selectedBooking?.event_detail?.event_name}
                                 className="w-full h-full object-cover"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent"></div>
 
                             <div className="absolute bottom-0 left-0 p-6 w-full">
-                                <div className="mb-2">{getStatusBadge(selectedBooking.status)}</div>
+                                <div className="mb-2">{getStatusBadge(selectedBooking?.status)}</div>
                                 <h2 className="text-4xl font-display font-bold text-white leading-none mb-2">
-                                    {selectedBooking.event_detail.event_name}
+                                    {selectedBooking?.event_detail?.event_name}
                                 </h2>
                                 <p className="text-gray-300 flex items-center gap-2 text-sm">
                                     <MapPin size={14} className="text-brand-red" />
-                                    {selectedBooking.event_detail.location}
+                                    {selectedBooking?.event_detail?.location}
                                 </p>
                             </div>
                         </div>
@@ -301,11 +301,11 @@ const MyBookings: React.FC<MyBookingsProps> = ({ userId }) => {
                             <div className="grid grid-cols-2 gap-4 mb-6">
                                 <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
                                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Date</p>
-                                    <p className="text-white font-bold">{formatDate(selectedBooking.event_detail.date_time)}</p>
+                                    <p className="text-white font-bold">{formatDate(selectedBooking?.event_detail?.date_time)}</p>
                                 </div>
                                 <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
                                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Time</p>
-                                    <p className="text-white font-bold">{formatTime(selectedBooking.event_detail.date_time)}</p>
+                                    <p className="text-white font-bold">{formatTime(selectedBooking?.event_detail?.date_time)}</p>
                                 </div>
                             </div>
 

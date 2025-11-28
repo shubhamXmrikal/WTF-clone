@@ -66,6 +66,49 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #ff0033;
     }
+
+    /* Animated Border Button */
+    @keyframes rotate-border {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes gradient-shift {
+
+      0%,
+      100% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+
+    .animated-border-btn {
+      position: relative;
+      padding: 3px;
+      border-radius: 16px;
+      background: linear-gradient(90deg, #ff0033, #ff6b00, #ff0033, #ff6b00);
+      background-size: 300% 300%;
+      animation: gradient-shift 3s ease infinite;
+    }
+
+    .animated-border-btn-inner {
+      background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+      border-radius: 13px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .animated-border-btn:hover .animated-border-btn-inner {
+      background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    }
   </style>
   <script type="importmap">
 {
