@@ -59,25 +59,31 @@ const App: React.FC = () => {
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12 pb-16 md:pb-32 flex flex-col md:flex-row items-center gap-8 md:gap-0">
             <div className="md:w-1/2 text-center md:text-left">
-              <h1 className="text-5xl md:text-7xl font-display font-bold leading-tight mb-6">
+              <h1 className="text-3xl md:text-7xl font-display font-bold leading-tight mb-6">
                 BRINGING THE <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-red to-orange-500 neon-text">STADIUM ROAR</span> <br />
                 TO YOUR DOOR!
               </h1>
-              <p className="text-gray-300 text-lg mb-8 max-w-xl mx-auto md:mx-0">
+              <p className="text-gray-300 text-sm md:text-lg mb-8 max-w-xl mx-auto md:mx-0">
                 Join the ultimate football community. Book tickets, play fantasy leagues, and engage with fans worldwide.
               </p>
 
               <div className="flex justify-center md:justify-start">
                 <button
-                  onClick={() => setCurrentPage('events')}
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      setIsAuthOpen(true);
+                    } else {
+                      setCurrentPage('events');
+                    }
+                  }}
                   className="animated-border-btn group cursor-pointer"
                 >
-                  <div className="animated-border-btn-inner px-10 py-5 flex flex-col items-center justify-center">
-                    <span className="text-2xl md:text-3xl font-display font-bold text-white group-hover:text-brand-red transition-colors">
+                  <div className="animated-border-btn-inner px-8 md:px-10 py-4 md:py-5 flex flex-col items-center justify-center">
+                    <span className="text-xl md:text-3xl font-display font-bold text-white group-hover:text-brand-red transition-colors">
                       Book Your First Event
                     </span>
-                    <span className="text-sm text-gray-400 mt-1">
+                    <span className="text-xs md:text-sm text-gray-400 mt-1">
                       Join the stadium experience today!
                     </span>
                   </div>
@@ -97,10 +103,10 @@ const App: React.FC = () => {
           <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-red to-transparent opacity-30"></div>
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">
+              <h2 className="text-2xl md:text-5xl font-display font-bold mb-4">
                 Get the <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-red to-orange-500">WhaTheFOOTBALL</span> App
               </h2>
-              <p className="text-gray-400 text-lg">Download now and never miss a match!</p>
+              <p className="text-gray-400 text-sm md:text-lg">Download now and never miss a match!</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -114,8 +120,8 @@ const App: React.FC = () => {
                     <Download size={40} className="text-white" />
                   </div>
                   <div className="text-left flex-1">
-                    <div className="text-sm text-gray-400 mb-1">GET IT ON</div>
-                    <div className="text-3xl font-display font-bold text-white group-hover:text-brand-red transition-colors">Google Play</div>
+                    <div className="text-xs md:text-sm text-gray-400 mb-1">GET IT ON</div>
+                    <div className="text-xl md:text-3xl font-display font-bold text-white group-hover:text-brand-red transition-colors">Google Play</div>
                     <div className="text-xs text-gray-500 mt-1">Available for Android</div>
                   </div>
                 </div>
@@ -131,8 +137,8 @@ const App: React.FC = () => {
                     <Download size={40} className="text-white" />
                   </div>
                   <div className="text-left flex-1">
-                    <div className="text-sm text-gray-400 mb-1">Download on the</div>
-                    <div className="text-3xl font-display font-bold text-white group-hover:text-brand-red transition-colors">App Store</div>
+                    <div className="text-xs md:text-sm text-gray-400 mb-1">Download on the</div>
+                    <div className="text-xl md:text-3xl font-display font-bold text-white group-hover:text-brand-red transition-colors">App Store</div>
                     <div className="text-xs text-gray-500 mt-1">Available for iOS</div>
                   </div>
                 </div>
@@ -144,8 +150,8 @@ const App: React.FC = () => {
         {/* About Us */}
         <section className="py-20 bg-black">
           <div className="max-w-4xl mx-auto px-4 text-center">
-            <h2 className="text-4xl font-display font-bold mb-8">About Us</h2>
-            <p className="text-gray-400 leading-relaxed text-lg">
+            <h2 className="text-2xl md:text-4xl font-display font-bold mb-8">About Us</h2>
+            <p className="text-gray-400 leading-relaxed text-sm md:text-lg">
               WhaTheFOOTBALL empowers football enthusiasts through innovative experiences, fostering a global community that celebrates the true spirit of football. We offer a user-friendly, personalized platform integrating event ticket booking, fan interactions, fantasy football, and more, redefining fan engagement by seamlessly blending technology and passion.
             </p>
           </div>
@@ -155,15 +161,15 @@ const App: React.FC = () => {
         <section className="py-20 bg-[#050505] relative">
           <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-red to-transparent opacity-30"></div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl font-display font-bold text-center mb-16">Salient Features</h2>
+            <h2 className="text-2xl md:text-4xl font-display font-bold text-center mb-16">Salient Features</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {FEATURES.map((feature, idx) => (
                 <div key={idx} className="flex flex-col items-center text-center group">
                   <div className="w-16 h-16 bg-[#111] rounded-2xl flex items-center justify-center mb-4 group-hover:bg-brand-red transition-colors duration-300 shadow-lg group-hover:shadow-[0_0_15px_rgba(255,0,51,0.5)]">
                     <feature.icon size={32} className="text-brand-red group-hover:text-white transition-colors" />
                   </div>
-                  <h3 className="font-bold text-lg mb-1">{feature.title}</h3>
-                  <p className="text-sm text-gray-500">{feature.desc}</p>
+                  <h3 className="font-bold text-base md:text-lg mb-1">{feature.title}</h3>
+                  <p className="text-xs md:text-sm text-gray-500">{feature.desc}</p>
                 </div>
               ))}
             </div>
@@ -181,8 +187,8 @@ const App: React.FC = () => {
               />
             </div>
             <div className="md:w-1/2">
-              <h2 className="text-4xl font-display font-bold mb-6">Fan Engagement</h2>
-              <p className="text-gray-400 mb-6">
+              <h2 className="text-2xl md:text-4xl font-display font-bold mb-6">Fan Engagement</h2>
+              <p className="text-sm md:text-base text-gray-400 mb-6">
                 Get ready for a football experience like never before! From interactive pre-match zones to exclusive player meet-and-greets, we're bringing the game closer to you. Join the global fan community through engaging social media challenges and live Q&A sessions.
               </p>
               <div className="flex gap-4">
@@ -199,10 +205,16 @@ const App: React.FC = () => {
 
         {/* CTA */}
         <section className="py-24 bg-gradient-to-b from-[#0a0a0a] to-black text-center">
-          <h2 className="text-3xl md:text-5xl font-display font-bold mb-8">Ready for the Kickoff?</h2>
-          <p className="text-gray-400 mb-10">Download the WhaTheFOOTBALL Application NOW!</p>
+          <h2 className="text-2xl md:text-5xl font-display font-bold mb-8">Ready for the Kickoff?</h2>
+          <p className="text-sm md:text-base text-gray-400 mb-10">Download the WhaTheFOOTBALL Application NOW!</p>
           <button
-            onClick={() => setCurrentPage('events')}
+            onClick={() => {
+              if (!isAuthenticated) {
+                setIsAuthOpen(true);
+              } else {
+                setCurrentPage('events');
+              }
+            }}
             className="bg-white text-black text-xl font-bold px-10 py-4 rounded-full hover:scale-105 transition-transform shadow-[0_0_30px_rgba(255,255,255,0.2)]"
           >
             Book Events Now
@@ -226,9 +238,9 @@ const App: React.FC = () => {
         </main>
 
         <footer className="bg-[#050505] border-t border-white/5 py-12">
-          <div className="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
-            <p>&copy; 2024 WhaTheFOOTBALL. All rights reserved.</p>
-            <div className="flex justify-center gap-4 mt-4">
+          <div className="max-w-7xl mx-auto px-4 text-center text-gray-500 text-xs md:text-sm">
+            <p>&copy; Copyright Cornerflag Technologies pvt ltd.</p>
+            <div className="flex flex-wrap justify-center gap-3 md:gap-4 mt-4">
               <span className="hover:text-white cursor-pointer">Privacy Policy</span>
               <span className="hover:text-white cursor-pointer">Terms of Service</span>
               <span className="hover:text-white cursor-pointer">Contact</span>
@@ -246,6 +258,7 @@ const App: React.FC = () => {
           event={bookingEvent}
           userPhone={user?.phone || ''}
           onClose={() => setBookingEvent(null)}
+          onNavigateToBookings={() => setCurrentPage('bookings')}
         />
 
         <GeminiChat />

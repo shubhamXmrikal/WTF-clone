@@ -17,9 +17,10 @@ interface BookingModalProps {
     event: Event | null;
     onClose: () => void;
     userPhone: string;
+    onNavigateToBookings?: () => void;
 }
 
-const BookingModal: React.FC<BookingModalProps> = ({ event, onClose, userPhone }) => {
+const BookingModal: React.FC<BookingModalProps> = ({ event, onClose, userPhone, onNavigateToBookings }) => {
     const [step, setStep] = useState<BookingStep>(BookingStep.DETAILS);
     const [selectedTickets, setSelectedTickets] = useState<SelectedTicket[]>([]);
     const [eventDetail, setEventDetail] = useState<EventDetailResponse['data'] | null>(null);
@@ -532,6 +533,18 @@ const BookingModal: React.FC<BookingModalProps> = ({ event, onClose, userPhone }
                             <Download size={18} />
                             Download Ticket
                         </button>
+                        {onNavigateToBookings && (
+                            <button
+                                onClick={() => {
+                                    onNavigateToBookings();
+                                    onClose();
+                                }}
+                                className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3.5 rounded-xl text-base tracking-wide uppercase transition-colors border border-white/20 hover:border-brand-red flex items-center justify-center gap-2"
+                            >
+                                <Ticket size={18} />
+                                View My Bookings
+                            </button>
+                        )}
                         <button
                             onClick={onClose}
                             className="w-full bg-white/5 hover:bg-white/10 text-white font-bold py-3.5 rounded-xl text-base tracking-wide uppercase transition-colors border border-white/10"

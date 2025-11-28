@@ -108,10 +108,10 @@ const MyBookings: React.FC<MyBookingsProps> = ({ userId }) => {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-12">
                 <div>
-                    <h1 className="text-5xl md:text-6xl font-display font-bold text-white mb-2">
+                    <h1 className="text-3xl md:text-6xl font-display font-bold text-white mb-2">
                         MY <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-red to-orange-500">BOOKINGS</span>
                     </h1>
-                    <p className="text-gray-400 text-lg">Manage your tickets and upcoming matches</p>
+                    <p className="text-gray-400 text-sm md:text-lg">Manage your tickets and upcoming matches</p>
                 </div>
 
                 {/* Filters */}
@@ -194,39 +194,39 @@ const MyBookings: React.FC<MyBookingsProps> = ({ userId }) => {
                                 </div>
 
                                 {/* Content Section */}
-                                <div className="p-6 relative z-20 -mt-12">
-                                    <h3 className="text-3xl font-display font-bold text-white mb-4 leading-none line-clamp-2 group-hover:text-brand-red transition-colors">
+                                <div className="p-4 md:p-6 relative z-20 -mt-12">
+                                    <h3 className="text-xl md:text-3xl font-display font-bold text-white mb-3 md:mb-4 leading-tight line-clamp-2 group-hover:text-brand-red transition-colors">
                                         {booking?.event_detail?.event_name}
                                     </h3>
 
-                                    <div className="space-y-3 mb-6">
-                                        <div className="flex items-center gap-3 text-gray-400">
-                                            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-                                                <Calendar size={14} className="text-brand-red" />
+                                    <div className="space-y-2 md:space-y-3 mb-4 md:mb-6">
+                                        <div className="flex items-center gap-2 md:gap-3 text-gray-400">
+                                            <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+                                                <Calendar size={12} className="md:w-3.5 md:h-3.5 text-brand-red" />
                                             </div>
-                                            <span className="text-sm font-medium">{formatDate(booking?.event_detail?.date_time)}</span>
+                                            <span className="text-xs md:text-sm font-medium">{formatDate(booking?.event_detail?.date_time)}</span>
                                         </div>
-                                        <div className="flex items-center gap-3 text-gray-400">
-                                            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-                                                <Clock size={14} className="text-brand-red" />
+                                        <div className="flex items-center gap-2 md:gap-3 text-gray-400">
+                                            <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+                                                <Clock size={12} className="md:w-3.5 md:h-3.5 text-brand-red" />
                                             </div>
-                                            <span className="text-sm font-medium">{formatTime(booking?.event_detail?.date_time)}</span>
+                                            <span className="text-xs md:text-sm font-medium">{formatTime(booking?.event_detail?.date_time)}</span>
                                         </div>
-                                        <div className="flex items-center gap-3 text-gray-400">
-                                            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-                                                <MapPin size={14} className="text-brand-red" />
+                                        <div className="flex items-center gap-2 md:gap-3 text-gray-400">
+                                            <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+                                                <MapPin size={12} className="md:w-3.5 md:h-3.5 text-brand-red" />
                                             </div>
-                                            <span className="text-sm font-medium line-clamp-1">{booking?.event_detail?.location}</span>
+                                            <span className="text-xs md:text-sm font-medium line-clamp-1">{booking?.event_detail?.location}</span>
                                         </div>
                                     </div>
 
                                     {/* Ticket Footer */}
-                                    <div className="pt-4 border-t border-dashed border-white/10 flex justify-between items-center">
-                                        <div className="flex items-center gap-2">
-                                            <Ticket size={16} className="text-brand-red" />
-                                            <span className="text-white font-bold">{getTotalTickets(booking)} Ticket(s)</span>
+                                    <div className="pt-3 md:pt-4 border-t border-dashed border-white/10 flex justify-between items-center">
+                                        <div className="flex items-center gap-1.5 md:gap-2">
+                                            <Ticket size={14} className="md:w-4 md:h-4 text-brand-red" />
+                                            <span className="text-white text-sm md:text-base font-bold">{getTotalTickets(booking)} Ticket(s)</span>
                                         </div>
-                                        <div className="text-xl font-display font-bold text-white">
+                                        <div className="text-lg md:text-xl font-display font-bold text-white">
                                             ₹{booking.amount.toFixed(0)}
                                         </div>
                                     </div>

@@ -18,7 +18,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onNavigate, currentPage }
 
   const navLinks = [
     { name: 'Home', value: 'home' },
-    { name: 'Events', value: 'events' },
+    ...(isAuthenticated ? [{ name: 'Events', value: 'events' }] : []),
     // { name: 'Organizer', value: 'organizer' },
     { name: 'About', value: 'about' },
   ];
@@ -179,8 +179,15 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onNavigate, currentPage }
                     onClick={() => handleNav('bookings')}
                     className="flex items-center px-3 py-2 text-gray-300 w-full hover:text-brand-red mt-2"
                   >
-                    <Ticket size={18} className="mr-2" />
+                    <Ticket size={18} className="mr-2 text-brand-red" />
                     <span>My Bookings</span>
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center px-3 py-2 text-gray-300 w-full hover:text-red-400 mt-2"
+                  >
+                    <LogOut size={18} className="mr-2 text-brand-red" />
+                    <span>Logout</span>
                   </button>
                 </>
               ) : (

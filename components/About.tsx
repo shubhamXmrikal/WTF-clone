@@ -63,10 +63,10 @@ const About: React.FC = () => {
             {/* Hero Section */}
             <section className="relative overflow-hidden pt-24 py-20 bg-gradient-to-b from-brand-red/10 to-black">
                 <div className="max-w-6xl mx-auto px-4 text-center">
-                    <h1 className="text-5xl md:text-7xl font-display font-bold mb-6">
+                    <h1 className="text-3xl md:text-7xl font-display font-bold mb-6">
                         ABOUT <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-red to-orange-500">WHATHEFOOTBALL</span>
                     </h1>
-                    <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                    <p className="text-base md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
                         More than just an app - we're a movement bringing football fans together, one match at a time.
                     </p>
                 </div>
@@ -77,13 +77,13 @@ const About: React.FC = () => {
                 <div className="max-w-6xl mx-auto px-4">
                     <div className="flex items-center justify-center mb-8">
                         <Target className="text-brand-red mr-4" size={48} />
-                        <h2 className="text-4xl md:text-5xl font-display font-bold">Our Mission</h2>
+                        <h2 className="text-2xl md:text-5xl font-display font-bold">Our Mission</h2>
                     </div>
-                    <p className="text-lg md:text-xl text-gray-300 text-center max-w-4xl mx-auto leading-relaxed mb-8">
+                    <p className="text-sm md:text-xl text-gray-300 text-center max-w-4xl mx-auto leading-relaxed mb-8">
                         WhaTheFOOTBALL was born from a simple idea: <span className="text-brand-red font-bold">every football fan deserves an unforgettable match-day experience</span>.
                         Whether you're watching from a packed stadium or a cozy venue with friends, we're here to amplify the roar, the passion, and the pure joy of the beautiful game.
                     </p>
-                    <p className="text-lg md:text-xl text-gray-300 text-center max-w-4xl mx-auto leading-relaxed">
+                    <p className="text-sm md:text-xl text-gray-300 text-center max-w-4xl mx-auto leading-relaxed">
                         We empower football enthusiasts through innovative experiences, fostering a global community that celebrates the true spirit of football.
                         Our user-friendly, personalized platform seamlessly blends <span className="text-brand-red font-bold">event ticket booking, fan interactions, fantasy football, and more</span> -
                         redefining fan engagement by merging technology with passion.
@@ -94,8 +94,8 @@ const About: React.FC = () => {
             {/* Features Grid */}
             <section className="py-20 bg-black">
                 <div className="max-w-7xl mx-auto px-4">
-                    <h2 className="text-4xl md:text-5xl font-display font-bold text-center mb-4">What We Offer</h2>
-                    <p className="text-gray-400 text-center mb-16 text-lg">Everything you need for the ultimate football experience</p>
+                    <h2 className="text-2xl md:text-5xl font-display font-bold text-center mb-4">What We Offer</h2>
+                    <p className="text-gray-400 text-center mb-16 text-sm md:text-lg">Everything you need for the ultimate football experience</p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {features.map((feature, idx) => (
@@ -106,8 +106,8 @@ const About: React.FC = () => {
                                 <div className="w-14 h-14 bg-brand-red/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-brand-red transition-colors">
                                     <feature.icon size={28} className="text-brand-red group-hover:text-white transition-colors" />
                                 </div>
-                                <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-                                <p className="text-gray-400 leading-relaxed">{feature.description}</p>
+                                <h3 className="text-lg md:text-xl font-bold mb-3">{feature.title}</h3>
+                                <p className="text-sm md:text-base text-gray-400 leading-relaxed">{feature.description}</p>
                             </div>
                         ))}
                     </div>
@@ -117,8 +117,8 @@ const About: React.FC = () => {
             {/* Values Section */}
             <section className="py-20 bg-gradient-to-b from-[#050505] to-black">
                 <div className="max-w-6xl mx-auto px-4">
-                    <h2 className="text-4xl md:text-5xl font-display font-bold text-center mb-4">Our Values</h2>
-                    <p className="text-gray-400 text-center mb-16 text-lg">The principles that drive everything we do</p>
+                    <h2 className="text-2xl md:text-5xl font-display font-bold text-center mb-4">Our Values</h2>
+                    <p className="text-gray-400 text-center mb-16 text-sm md:text-lg">The principles that drive everything we do</p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {values.map((value, idx) => (
@@ -129,8 +129,8 @@ const About: React.FC = () => {
                                 <div className="w-16 h-16 bg-brand-red/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-brand-red transition-colors">
                                     <value.icon size={32} className="text-brand-red group-hover:text-white transition-colors" />
                                 </div>
-                                <h3 className="text-xl font-bold mb-2">{value.title}</h3>
-                                <p className="text-gray-400 text-sm">{value.description}</p>
+                                <h3 className="text-lg md:text-xl font-bold mb-2">{value.title}</h3>
+                                <p className="text-gray-400 text-xs md:text-sm">{value.description}</p>
                             </div>
                         ))}
                     </div>
@@ -140,26 +140,26 @@ const About: React.FC = () => {
             {/* Community Impact */}
             <section className="py-20 bg-black">
                 <div className="max-w-6xl mx-auto px-4">
-                    <h2 className="text-4xl md:text-5xl font-display font-bold text-center mb-16">The WTF Community</h2>
+                    <h2 className="text-2xl md:text-5xl font-display font-bold text-center mb-16">The WTF Community</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
                         <div className="text-center p-8 bg-gradient-to-b from-brand-red/10 to-transparent rounded-2xl border border-brand-red/20">
-                            <div className="text-5xl md:text-6xl font-bold text-brand-red mb-2">50K+</div>
-                            <div className="text-gray-300 text-lg">Active Users</div>
+                            <div className="text-3xl md:text-6xl font-bold text-brand-red mb-2">50K+</div>
+                            <div className="text-gray-300 text-sm md:text-lg">Active Users</div>
                         </div>
                         <div className="text-center p-8 bg-gradient-to-b from-brand-red/10 to-transparent rounded-2xl border border-brand-red/20">
-                            <div className="text-5xl md:text-6xl font-bold text-brand-red mb-2">1000+</div>
-                            <div className="text-gray-300 text-lg">Events Hosted</div>
+                            <div className="text-3xl md:text-6xl font-bold text-brand-red mb-2">1000+</div>
+                            <div className="text-gray-300 text-sm md:text-lg">Events Hosted</div>
                         </div>
                         <div className="text-center p-8 bg-gradient-to-b from-brand-red/10 to-transparent rounded-2xl border border-brand-red/20">
-                            <div className="text-5xl md:text-6xl font-bold text-brand-red mb-2">100+</div>
-                            <div className="text-gray-300 text-lg">Partner Venues</div>
+                            <div className="text-3xl md:text-6xl font-bold text-brand-red mb-2">100+</div>
+                            <div className="text-gray-300 text-sm md:text-lg">Partner Venues</div>
                         </div>
                     </div>
 
                     <div className="bg-[#111] border border-gray-800 rounded-2xl p-8 md:p-12">
-                        <h3 className="text-3xl font-bold mb-6 text-center">Join the Movement</h3>
-                        <p className="text-gray-300 text-lg text-center max-w-3xl mx-auto leading-relaxed mb-8">
+                        <h3 className="text-xl md:text-3xl font-bold mb-6 text-center">Join the Movement</h3>
+                        <p className="text-gray-300 text-sm md:text-lg text-center max-w-3xl mx-auto leading-relaxed mb-8">
                             From casual fans to die-hard supporters, WhaTheFOOTBALL brings together people who share one thing:
                             an undying love for football. Whether you're cheering for your local team or following international tournaments,
                             you'll find your tribe here. <span className="text-brand-red font-bold">This is where passion meets community.</span>
@@ -185,41 +185,41 @@ const About: React.FC = () => {
             {/* Why Choose Us */}
             <section className="py-20 bg-gradient-to-b from-[#050505] to-black">
                 <div className="max-w-6xl mx-auto px-4">
-                    <h2 className="text-4xl md:text-5xl font-display font-bold text-center mb-16">Why Choose WhaTheFOOTBALL?</h2>
+                    <h2 className="text-2xl md:text-5xl font-display font-bold text-center mb-16">Why Choose WhaTheFOOTBALL?</h2>
 
                     <div className="space-y-6">
                         <div className="bg-[#111] border border-gray-800 rounded-xl p-6 hover:border-brand-red transition-all">
-                            <h3 className="text-2xl font-bold mb-3 flex items-center">
+                            <h3 className="text-lg md:text-2xl font-bold mb-3 flex items-center">
                                 <span className="text-brand-red mr-3">✓</span> Seamless Experience
                             </h3>
-                            <p className="text-gray-400 pl-8">
+                            <p className="text-sm md:text-base text-gray-400 pl-8">
                                 From browsing events to booking tickets, everything is designed to be smooth, fast, and hassle-free.
                             </p>
                         </div>
 
                         <div className="bg-[#111] border border-gray-800 rounded-xl p-6 hover:border-brand-red transition-all">
-                            <h3 className="text-2xl font-bold mb-3 flex items-center">
+                            <h3 className="text-lg md:text-2xl font-bold mb-3 flex items-center">
                                 <span className="text-brand-red mr-3">✓</span> Trusted by Thousands
                             </h3>
-                            <p className="text-gray-400 pl-8">
+                            <p className="text-sm md:text-base text-gray-400 pl-8">
                                 Join a community of verified football fans who trust us for their match-day experiences.
                             </p>
                         </div>
 
                         <div className="bg-[#111] border border-gray-800 rounded-xl p-6 hover:border-brand-red transition-all">
-                            <h3 className="text-2xl font-bold mb-3 flex items-center">
+                            <h3 className="text-lg md:text-2xl font-bold mb-3 flex items-center">
                                 <span className="text-brand-red mr-3">✓</span> Always Evolving
                             </h3>
-                            <p className="text-gray-400 pl-8">
+                            <p className="text-sm md:text-base text-gray-400 pl-8">
                                 We listen to our community and constantly add new features, venues, and experiences.
                             </p>
                         </div>
 
                         <div className="bg-[#111] border border-gray-800 rounded-xl p-6 hover:border-brand-red transition-all">
-                            <h3 className="text-2xl font-bold mb-3 flex items-center">
+                            <h3 className="text-lg md:text-2xl font-bold mb-3 flex items-center">
                                 <span className="text-brand-red mr-3">✓</span> More Than Just Tickets
                             </h3>
-                            <p className="text-gray-400 pl-8">
+                            <p className="text-sm md:text-base text-gray-400 pl-8">
                                 We're building a complete ecosystem for football fans - from fantasy leagues to exclusive merchandise.
                             </p>
                         </div>
@@ -230,10 +230,10 @@ const About: React.FC = () => {
             {/* CTA Section */}
             <section className="py-20 bg-black pb-20">
                 <div className="max-w-4xl mx-auto px-4 text-center">
-                    <h2 className="text-4xl md:text-5xl font-display font-bold mb-6">
+                    <h2 className="text-2xl md:text-5xl font-display font-bold mb-6">
                         Ready to Experience Football Like Never Before?
                     </h2>
-                    <p className="text-xl text-gray-300 mb-10">
+                    <p className="text-base md:text-xl text-gray-300 mb-10">
                         Download the app today and join thousands of fans who've already made WhaTheFOOTBALL their match-day companion.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
