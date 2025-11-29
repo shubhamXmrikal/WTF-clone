@@ -192,7 +192,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ event, onClose, userPhone, 
         const { data } = checkoutResponse;
 
         const options = {
-            key: razorpayKey || "rzp_test_8AoW78tTxWoLfR",
+            key: razorpayKey || "rzp_live_fFtizgWhd1jMLo",
             amount: Math.round(data.amount * 100), // Convert to paise
             currency: "INR",
             name: "WhaTheFootball",
