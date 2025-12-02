@@ -4,6 +4,7 @@ import { Event, eventDetailAPI, EventDetailResponse, bookingAPI, CheckoutPayload
 import { X, Calendar, MapPin, CheckCircle, CreditCard, Loader2, Download, ChevronRight, Ticket, Info, Gift, Sparkles } from 'lucide-react';
 import TicketSelector, { SelectedTicket } from './TicketSelector';
 import { downloadTicket, TicketData } from '../../utils/ticketDownload';
+import { useAppSelector } from '../../store/hooks';
 
 
 // Declare Razorpay on window
@@ -18,9 +19,19 @@ interface BookingModalProps {
     onClose: () => void;
     userPhone: string;
     onNavigateToBookings?: () => void;
+    onRequireLogin?: () => void;
 }
 
-const BookingModal: React.FC<BookingModalProps> = ({ event, onClose, userPhone, onNavigateToBookings }) => {
+const BOOKING_DRAFT_KEY = 'wtf_booking_draft';
+
+const BookingModal: React.FC<BookingModalProps> = ({
+    event,
+    onClose,
+    userPhone,
+    onNavigateToBookings,
+    onRequireLogin
+}) => {
+    const { isAuthenticated } = useAppSelector((state) => state.auth);
     const [step, setStep] = useState<BookingStep>(BookingStep.DETAILS);
     const [selectedTickets, setSelectedTickets] = useState<SelectedTicket[]>([]);
     const [eventDetail, setEventDetail] = useState<EventDetailResponse['data'] | null>(null);
@@ -36,10 +47,49 @@ const BookingModal: React.FC<BookingModalProps> = ({ event, onClose, userPhone, 
             setStep(BookingStep.DETAILS);
             setSelectedTickets([]);
             fetchEventDetails(event._id);
+
+            // Restore draft tickets for this event if present
+            try {
+                const stored = localStorage.getItem(BOOKING_DRAFT_KEY);
+                if (stored) {
+                    const parsed = JSON.parse(stored) as {
+                        eventId: string;
+                        selectedTickets: SelectedTicket[];
+                        step?: BookingStep;
+                    };
+                    if (parsed.eventId === event._id && parsed.selectedTickets?.length) {
+                        setSelectedTickets(parsed.selectedTickets);
+                        setStep(parsed.step ?? BookingStep.CHECKOUT);
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to restore booking draft', e);
+            }
         } else {
             setEventDetail(null);
         }
     }, [event]);
+
+    // Persist draft selection so it survives login or refresh if needed
+    useEffect(() => {
+        if (!event) return;
+        try {
+            if (selectedTickets.length > 0) {
+                localStorage.setItem(
+                    BOOKING_DRAFT_KEY,
+                    JSON.stringify({
+                        eventId: event._id,
+                        selectedTickets,
+                        step,
+                    }),
+                );
+            } else {
+                localStorage.removeItem(BOOKING_DRAFT_KEY);
+            }
+        } catch (e) {
+            console.error('Failed to persist booking draft', e);
+        }
+    }, [event, selectedTickets, step]);
 
     const fetchEventDetails = async (eventId: string) => {
         try {
@@ -110,6 +160,11 @@ const BookingModal: React.FC<BookingModalProps> = ({ event, onClose, userPhone, 
             }
             setStep(BookingStep.CHECKOUT);
         } else if (step === BookingStep.CHECKOUT) {
+            // Require login before processing payment
+            if (!isAuthenticated) {
+                onRequireLogin?.();
+                return;
+            }
             processPayment();
         }
     };
@@ -175,6 +230,12 @@ const BookingModal: React.FC<BookingModalProps> = ({ event, onClose, userPhone, 
             if (response.status) {
                 setConfirmedBooking(response.data);
                 setStep(BookingStep.SUCCESS);
+                // Clear any saved draft after successful booking
+                try {
+                    localStorage.removeItem(BOOKING_DRAFT_KEY);
+                } catch (e) {
+                    console.error('Failed to clear booking draft after success', e);
+                }
             } else {
                 alert('Booking confirmation failed: ' + response.message);
                 setStep(BookingStep.CHECKOUT);
@@ -226,6 +287,14 @@ const BookingModal: React.FC<BookingModalProps> = ({ event, onClose, userPhone, 
 
         const rzp = new window.Razorpay(options);
         rzp.open();
+    };
+
+    const clearDraft = () => {
+        try {
+            localStorage.removeItem(BOOKING_DRAFT_KEY);
+        } catch (e) {
+            console.error('Failed to clear booking draft', e);
+        }
     };
 
     const formatCurrency = (amount: number) => {
@@ -292,7 +361,10 @@ const BookingModal: React.FC<BookingModalProps> = ({ event, onClose, userPhone, 
                     <h3 className="font-display text-xl font-bold tracking-wide text-white">
                         {step === BookingStep.SUCCESS ? 'BOOKING CONFIRMED' : 'BOOK EVENT'}
                     </h3>
-                    <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                    <button onClick={() => {
+                        clearDraft();
+                        onClose();
+                    }} className="p-2 hover:bg-white/10 rounded-full transition-colors">
                         <X size={20} className="text-gray-400" />
                     </button>
                 </div>
@@ -524,7 +596,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ event, onClose, userPhone, 
                     </div>
                 )}
 
-                {step === BookingStep.SUCCESS && (
+                        {step === BookingStep.SUCCESS && (
                     <div className="p-4 border-t border-white/10 bg-[#1a1a1a] space-y-3">
                         <button
                             onClick={handleDownloadTicket}
@@ -536,6 +608,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ event, onClose, userPhone, 
                         {onNavigateToBookings && (
                             <button
                                 onClick={() => {
+                                    clearDraft();
                                     onNavigateToBookings();
                                     onClose();
                                 }}
@@ -546,7 +619,10 @@ const BookingModal: React.FC<BookingModalProps> = ({ event, onClose, userPhone, 
                             </button>
                         )}
                         <button
-                            onClick={onClose}
+                            onClick={() => {
+                                clearDraft();
+                                onClose();
+                            }}
                             className="w-full bg-white/5 hover:bg-white/10 text-white font-bold py-3.5 rounded-xl text-base tracking-wide uppercase transition-colors border border-white/10"
                         >
                             Close

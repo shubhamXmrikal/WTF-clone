@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { X, Smartphone, ArrowRight, Lock, Loader2 } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { sendOtp, verifyOtp, clearError } from '../store/slices/authSlice';
+import React, { useState, useEffect } from "react";
+import { X, Smartphone, ArrowRight, Lock, Loader2 } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { sendOtp, verifyOtp, clearError } from "../store/slices/authSlice";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -9,27 +9,31 @@ interface AuthModalProps {
   onLoginSuccess?: () => void;
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
+const AuthModal: React.FC<AuthModalProps> = ({
+  isOpen,
+  onClose,
+  onLoginSuccess,
+}) => {
   const dispatch = useAppDispatch();
   const { isLoading, error, otpSent } = useAppSelector((state) => state.auth);
 
-  const [step, setStep] = useState<'PHONE' | 'OTP'>('PHONE');
-  const [phone, setPhone] = useState('');
-  const [countryCode, setCountryCode] = useState('91');
-  const [otp, setOtp] = useState(['', '', '', '']);
+  const [step, setStep] = useState<"PHONE" | "OTP">("PHONE");
+  const [phone, setPhone] = useState("");
+  const [countryCode, setCountryCode] = useState("91");
+  const [otp, setOtp] = useState(["", "", "", ""]);
 
   useEffect(() => {
     if (isOpen) {
-      setStep('PHONE');
-      setPhone('');
-      setOtp(['', '', '', '']);
+      setStep("PHONE");
+      setPhone("");
+      setOtp(["", "", "", ""]);
       dispatch(clearError());
     }
   }, [isOpen, dispatch]);
 
   useEffect(() => {
     if (otpSent) {
-      setStep('OTP');
+      setStep("OTP");
     }
   }, [otpSent]);
 
@@ -39,14 +43,16 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
     e.preventDefault();
     if (phone.length >= 10) {
       try {
-        await dispatch(sendOtp({
-          country_code: Number(countryCode),
-          phone: phone,
-          source: '',
-          referral: ''
-        })).unwrap();
+        await dispatch(
+          sendOtp({
+            country_code: Number(countryCode),
+            phone: phone,
+            source: "",
+            referral: "",
+          })
+        ).unwrap();
       } catch (err) {
-        console.error('Failed to send OTP:', err);
+        console.error("Failed to send OTP:", err);
       }
     }
   };
@@ -58,33 +64,38 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
     setOtp(newOtp);
 
     // Auto focus next
-    if (value !== '' && index < 3) {
+    if (value !== "" && index < 3) {
       const nextInput = document.getElementById(`otp-${index + 1}`);
       nextInput?.focus();
     }
   };
 
   const handleVerify = async () => {
-    if (otp.join('').length === 4) {
+    if (otp.join("").length === 4) {
       try {
-        await dispatch(verifyOtp({
-          phone: phone,
-          country_code: countryCode,
-          otp: otp.join('')
-        })).unwrap();
+        await dispatch(
+          verifyOtp({
+            phone: phone,
+            country_code: countryCode,
+            otp: otp.join(""),
+          })
+        ).unwrap();
 
         onLoginSuccess?.();
         onClose();
       } catch (err) {
-        console.error('Failed to verify OTP:', err);
+        console.error("Failed to verify OTP:", err);
       }
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={onClose}></div>
+      <div
+        className="absolute inset-0 bg-black/90 backdrop-blur-sm"
+        onClick={onClose}
+      ></div>
 
       {/* Modal */}
       <div className="relative bg-brand-gray border border-white/10 rounded-2xl w-full max-w-md p-8 shadow-2xl overflow-hidden">
@@ -100,13 +111,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
         </button>
 
         <h2 className="text-2xl font-bold font-display text-white mb-2">
-          {step === 'PHONE' ? 'Welcome Fan!' : 'Verify OTP'}
+          {step === "PHONE" ? "Welcome Fan!" : "Verify OTP"}
         </h2>
         <p className="text-gray-400 text-sm mb-4">
-          {step === 'PHONE'
-            ? 'Enter your mobile number to get the stadium experience.'
-            : `Enter the 4-digit code sent to ${phone}`
-          }
+          {step === "PHONE"
+            ? "Enter your mobile number to get the stadium experience."
+            : `Enter the 4-digit code sent to ${phone}`}
         </p>
 
         {/* Error Message */}
@@ -116,15 +126,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
           </div>
         )}
 
-        {step === 'PHONE' ? (
+        {step === "PHONE" ? (
           <form onSubmit={handlePhoneSubmit}>
             <div className="relative mb-6">
-              <Smartphone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <Smartphone
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={20}
+              />
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '');
+                  const value = e.target.value.replace(/\D/g, "");
                   if (value.length <= 10) {
                     setPhone(value);
                   }
@@ -172,7 +185,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
             </div>
             <button
               onClick={handleVerify}
-              disabled={otp.join('').length !== 4 || isLoading}
+              disabled={otp.join("").length !== 4 || isLoading}
               className="w-full bg-brand-red hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl flex items-center justify-center space-x-2 transition-all shadow-lg shadow-red-900/20 mb-4"
             >
               {isLoading ? (
@@ -188,7 +201,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
               )}
             </button>
             <button
-              onClick={() => setStep('PHONE')}
+              onClick={() => setStep("PHONE")}
               className="w-full text-center text-gray-400 hover:text-white text-sm"
               disabled={isLoading}
             >

@@ -106,8 +106,8 @@ const MyBookings: React.FC<MyBookingsProps> = ({ userId }) => {
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-12">
-                <div>
+            <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-6 mb-12">
+                <div className="text-center md:text-left">
                     <h1 className="text-3xl md:text-6xl font-display font-bold text-white mb-2">
                         MY <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-red to-orange-500">BOOKINGS</span>
                     </h1>

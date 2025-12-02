@@ -18,7 +18,8 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onNavigate, currentPage }
 
   const navLinks = [
     { name: 'Home', value: 'home' },
-    ...(isAuthenticated ? [{ name: 'Events', value: 'events' }] : []),
+    // ...(isAuthenticated ? [{ name: 'Events', value: 'events' }] : []),
+    { name: 'Events', value: 'events' },
     // { name: 'Organizer', value: 'organizer' },
     { name: 'About', value: 'about' },
   ];
