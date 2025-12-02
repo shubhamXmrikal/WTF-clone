@@ -65,6 +65,9 @@ const authSlice = createSlice({
             state.error = null;
             state.otpSent = false;
         },
+        resetOtpSent: (state) => {
+            state.otpSent = false;
+        },
         clearError: (state) => {
             state.error = null;
         },
@@ -135,5 +138,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { logout, clearError, updateUserData } = authSlice.actions;
+export const { logout, clearError, updateUserData, resetOtpSent } = authSlice.actions;
 export default authSlice.reducer;

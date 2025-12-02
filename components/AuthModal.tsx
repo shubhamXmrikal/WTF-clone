@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Smartphone, ArrowRight, Lock, Loader2, User } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { sendOtp, verifyOtp, clearError, editProfile, updateUserData } from '../store/slices/authSlice';
+import { sendOtp, verifyOtp, clearError, editProfile, updateUserData, resetOtpSent } from '../store/slices/authSlice';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -28,6 +28,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
       setFirstName('');
       setIsSavingName(false);
       dispatch(clearError());
+      dispatch(resetOtpSent());
     }
   }, [isOpen, dispatch]);
 
@@ -234,7 +235,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
               )}
             </button>
             <button
-              onClick={() => setStep('PHONE')}
+              onClick={() => {
+                dispatch(resetOtpSent());
+                setOtp(['', '', '', '']);
+                setStep('PHONE');
+              }}
               className="w-full text-center text-gray-400 hover:text-white text-sm"
               disabled={isLoading}
             >
