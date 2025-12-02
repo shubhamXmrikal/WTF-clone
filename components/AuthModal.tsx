@@ -69,6 +69,24 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
     }
   };
 
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace') {
+      const newOtp = [...otp];
+      
+      // If current field has a value, clear it
+      if (newOtp[index] !== '') {
+        newOtp[index] = '';
+        setOtp(newOtp);
+      } else if (index > 0) {
+        // If current field is empty, move to previous and clear it
+        newOtp[index - 1] = '';
+        setOtp(newOtp);
+        const prevInput = document.getElementById(`otp-${index - 1}`);
+        prevInput?.focus();
+      }
+    }
+  };
+
   const handleVerify = async () => {
     if (otp.join('').length === 4) {
       try {
@@ -212,6 +230,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleOtpChange(index, e.target.value)}
+                  onKeyDown={(e) => handleOtpKeyDown(index, e)}
                   className="w-16 h-16 bg-black/50 border border-gray-700 rounded-xl text-center text-2xl font-bold text-white focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red transition-all"
                   disabled={isLoading}
                 />
