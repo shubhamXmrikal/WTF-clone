@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { User, Menu, X, LogIn, UserCircle, Ticket, ChevronDown, LogOut } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { logout } from '../store/slices/authSlice';
+import logo from '../assets/WTFLOGOFULL.png';
 
 interface NavbarProps {
   onLoginClick: () => void;
@@ -61,7 +62,8 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onNavigate, currentPage }
           {/* Logo */}
           <div className="flex-shrink-0 cursor-pointer" onClick={() => handleNav('home')}>
             <h1 className="font-display text-3xl font-bold tracking-wider text-white">
-              WHA<span className="text-brand-red">THE</span>FOOTBALL
+              {/* WHA<span className="text-brand-red">THE</span>FOOTBALL */}
+              <img className='w-80 object-contain' src={logo} alt="Logo" />
             </h1>
           </div>
 

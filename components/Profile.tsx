@@ -104,7 +104,7 @@ const Profile: React.FC = () => {
                                 alt={user.first_name}
                                 className="w-32 h-32 rounded-full border-4 border-brand-red/50 object-cover"
                             />
-                            <div className="absolute -bottom-2 -right-2 bg-brand-red text-white text-xs px-3 py-1 rounded-full font-bold">
+                            <div className="absolute left-1/2 -translate-x-1/2 -bottom-2 bg-brand-red text-white text-xs px-3 py-1 rounded-full font-bold">
                                 {user.verified_user ? 'Verified' : 'Unverified'}
                             </div>
                         </div>

@@ -54,11 +54,11 @@ const HomePage: React.FC<{
             <div className="flex justify-center md:justify-start">
               <button
                 onClick={() => {
-                  if (!isAuthenticated) {
-                    openLogin();
-                  } else {
+                  // if (!isAuthenticated) {
+                  //   openLogin();
+                  // } else {
                     goToEvents();
-                  }
+                  // }
                 }}
                 className="animated-border-btn group cursor-pointer"
               >

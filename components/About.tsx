@@ -63,7 +63,7 @@ const About: React.FC = () => {
             {/* Hero Section */}
             <section className="relative overflow-hidden pt-24 py-20 bg-gradient-to-b from-brand-red/10 to-black">
                 <div className="max-w-6xl mx-auto px-4 text-center">
-                    <h1 className="text-3xl md:text-7xl font-display font-bold mb-6">
+                    <h1 className="text-3xl md:text-7xl font-display font-bold mb-6 flex items-center justify-center">
                         ABOUT <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-red to-orange-500">WHATHEFOOTBALL</span>
                     </h1>
                     <p className="text-base md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
