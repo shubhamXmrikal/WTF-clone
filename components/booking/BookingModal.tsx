@@ -150,6 +150,18 @@ const BookingModal: React.FC<BookingModalProps> = ({
         return selectedTickets.reduce((sum, ticket) => sum + ticket.quantity, 0);
     };
 
+    const handleBack = () => {
+        if (step === BookingStep.DETAILS) {
+            // From first step just close and clear draft
+            clearDraft();
+            onClose();
+        } else if (step === BookingStep.SEATS) {
+            setStep(BookingStep.DETAILS);
+        } else if (step === BookingStep.CHECKOUT) {
+            setStep(BookingStep.SEATS);
+        }
+    };
+
     const handleNext = () => {
         if (step === BookingStep.DETAILS) {
             setStep(BookingStep.SEATS);
@@ -369,10 +381,21 @@ const BookingModal: React.FC<BookingModalProps> = ({
                     </button>
                 </div>
 
-                {/* Stepper (Only show for non-success/processing steps) */}
+                {/* Stepper + Back (Only show for non-success/processing steps) */}
                 {step !== BookingStep.SUCCESS && step !== BookingStep.PROCESSING && (
-                    <div className="bg-[#111] pt-4 pb-2 border-b border-white/5">
-                        <Stepper />
+                    <div className="bg-[#111] pt-3 pb-2 border-b border-white/5">
+                        <div className="flex items-center justify-between px-4 mb-2">
+                            <button
+                                onClick={handleBack}
+                                className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-gray-400 hover:text-white transition-colors"
+                            >
+                                <ChevronRight size={14} className="rotate-180" />
+                                <span>{step === BookingStep.DETAILS ? 'Back to Events' : 'Back'}</span>
+                            </button>
+                        </div>
+                        <div className="px-4">
+                            <Stepper />
+                        </div>
                     </div>
                 )}
 

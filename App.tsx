@@ -5,6 +5,7 @@ import {
   Route,
   useLocation,
   useNavigate,
+  useParams,
 } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import AuthModal from './components/AuthModal';
@@ -15,7 +16,7 @@ import MyBookings from './components/MyBookings';
 import About from './components/About';
 import EventsPage from './components/events/EventsPage';
 import { useAppSelector } from './store/hooks';
-import { Event } from './api';
+import { Event, eventDetailAPI, type EventDetailResponse } from './api';
 import { FEATURES } from './constants';
 import { Download } from 'lucide-react';
 import phoneImages from './assets/phoneimages.png';
@@ -64,7 +65,7 @@ const HomePage: React.FC<{
               >
                 <div className="animated-border-btn-inner px-8 md:px-10 py-4 md:py-5 flex flex-col items-center justify-center">
                   <span className="text-xl md:text-3xl font-display font-bold text-white group-hover:text-brand-red transition-colors">
-                    Book Your First Event
+                    Join the screening
                   </span>
                   <span className="text-xs md:text-sm text-gray-400 mt-1">
                     Join the stadium experience today!
@@ -252,7 +253,6 @@ const BOOKING_DRAFT_KEY = 'wtf_booking_draft';
 const AppContent: React.FC = () => {
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [bookingEvent, setBookingEvent] = useState<Event | null>(null);
   const [redirectPath, setRedirectPath] = useState<string | null>(null);
 
   const navigate = useNavigate();
@@ -301,9 +301,8 @@ const AppContent: React.FC = () => {
   };
 
   const handleBookClick = (event: Event) => {
-    // Always open the booking modal first.
-    // Login will be requested later at checkout inside BookingModal if needed.
-    setBookingEvent(event);
+    // Navigate to dedicated event booking page so it has a shareable URL
+    navigate(`/details/${event._id}`, { state: { event } });
   };
 
   const handleLoginSuccess = () => {
@@ -333,6 +332,79 @@ const AppContent: React.FC = () => {
     }
   }, [location.pathname]);
 
+  const EventDetailsRoute: React.FC = () => {
+    const { eventId } = useParams<{ eventId: string }>();
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const state = location.state as { event?: Event } | undefined;
+    const [event, setEvent] = useState<Event | null>(state?.event || null);
+    const [isLoadingEvent, setIsLoadingEvent] = useState(false);
+    const [loadError, setLoadError] = useState<string | null>(null);
+
+    React.useEffect(() => {
+      const load = async () => {
+        if (!event && eventId) {
+          try {
+            setIsLoadingEvent(true);
+            setLoadError(null);
+            const res: EventDetailResponse = await eventDetailAPI.getEventDetail(eventId);
+            if (res.status) {
+              const d = res.data;
+              const mappedEvent: Event = {
+                _id: d._id,
+                event_name: d.event_name,
+                location: d.location,
+                price: d.price,
+                venue_ticket_limit: d.venue_ticket_limit,
+                date_time: d.date_time,
+                description: d.description,
+                user_id: d.user_id,
+                match_name: d.match_name,
+                status: d.status,
+                match_status: d.match_status,
+                createdAt: d.createdAt,
+                updatedAt: d.updatedAt,
+                __v: d.__v,
+                event_images: d.event_images,
+                organizer_detail: d.organizer_detail,
+                cancellation_penalty: d.cancellation_percentage,
+                platform_fees: d.platform_fees,
+              };
+              setEvent(mappedEvent);
+            } else {
+              setLoadError('Event not found');
+            }
+          } catch (e) {
+            console.error('Failed to load event detail', e);
+            setLoadError('Failed to load event');
+          } finally {
+            setIsLoadingEvent(false);
+          }
+        }
+      };
+      load();
+    }, [event, eventId]);
+
+    if (isLoadingEvent || !event) {
+      return (
+        <div className="min-h-[60vh] flex items-center justify-center text-gray-400">
+          {loadError || 'Loading event...'}
+        </div>
+      );
+    }
+
+    return (
+      <BookingModal
+        event={event}
+        userPhone={user?.phone || ''}
+        onClose={() => navigate('/events')}
+        onNavigateToBookings={() => navigate('/bookings')}
+        onRequireLogin={() => openLogin(`/details/${event._id}`)}
+      />
+    );
+  };
+
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-brand-red selection:text-white">
       <Navbar
@@ -357,6 +429,7 @@ const AppContent: React.FC = () => {
           <Route path="/about" element={<About />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/bookings" element={<MyBookings userId={user?._id || ''} />} />
+          <Route path="/details/:eventId" element={<EventDetailsRoute />} />
         </Routes>
       </main>
 
@@ -376,14 +449,6 @@ const AppContent: React.FC = () => {
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
         onLoginSuccess={handleLoginSuccess}
-      />
-
-      <BookingModal
-        event={bookingEvent}
-        userPhone={user?.phone || ''}
-        onClose={() => setBookingEvent(null)}
-        onNavigateToBookings={() => navigate('/bookings')}
-        onRequireLogin={() => openLogin('/events')}
       />
 
       <GeminiChat />
