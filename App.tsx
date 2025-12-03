@@ -9,14 +9,15 @@ import {
 } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import AuthModal from './components/AuthModal';
-import BookingModal from './components/booking/BookingModal';
+import EventDetailsPage from './components/booking/EventDetailsPage';
+import CheckoutPage from './components/booking/CheckoutPage';
 import GeminiChat from './components/GeminiChat';
 import Profile from './components/Profile';
 import MyBookings from './components/MyBookings';
 import About from './components/About';
 import EventsPage from './components/events/EventsPage';
 import { useAppSelector } from './store/hooks';
-import { Event, eventDetailAPI, type EventDetailResponse } from './api';
+import { Event } from './api';
 import { FEATURES } from './constants';
 import { Download } from 'lucide-react';
 import phoneImages from './assets/phoneimages.png';
@@ -257,6 +258,16 @@ const AppContent: React.FC = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Check for redirect query param on mount and when location changes
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const redirectParam = urlParams.get('redirect');
+    if (redirectParam && !isAuthenticated && !isAuthOpen) {
+      setRedirectPath(redirectParam);
+      setIsAuthOpen(true);
+    }
+  }, [location.search, isAuthenticated, isAuthOpen]);
 
   const resolvePathFromPage = (page: string) => {
     switch (page) {
@@ -301,8 +312,8 @@ const AppContent: React.FC = () => {
   };
 
   const handleBookClick = (event: Event) => {
-    // Navigate to dedicated event booking page so it has a shareable URL
-    navigate(`/details/${event._id}`, { state: { event } });
+    // Navigate to dedicated event details page so it has a shareable URL
+    navigate(`/event/details/${event._id}`, { state: { event } });
   };
 
   const handleLoginSuccess = () => {
@@ -332,78 +343,13 @@ const AppContent: React.FC = () => {
     }
   }, [location.pathname]);
 
-  const EventDetailsRoute: React.FC = () => {
-    const { eventId } = useParams<{ eventId: string }>();
-    const location = useLocation();
-    const navigate = useNavigate();
-
-    const state = location.state as { event?: Event } | undefined;
-    const [event, setEvent] = useState<Event | null>(state?.event || null);
-    const [isLoadingEvent, setIsLoadingEvent] = useState(false);
-    const [loadError, setLoadError] = useState<string | null>(null);
-
-    React.useEffect(() => {
-      const load = async () => {
-        if (!event && eventId) {
-          try {
-            setIsLoadingEvent(true);
-            setLoadError(null);
-            const res: EventDetailResponse = await eventDetailAPI.getEventDetail(eventId);
-            if (res.status) {
-              const d = res.data;
-              const mappedEvent: Event = {
-                _id: d._id,
-                event_name: d.event_name,
-                location: d.location,
-                price: d.price,
-                venue_ticket_limit: d.venue_ticket_limit,
-                date_time: d.date_time,
-                description: d.description,
-                user_id: d.user_id,
-                match_name: d.match_name,
-                status: d.status,
-                match_status: d.match_status,
-                createdAt: d.createdAt,
-                updatedAt: d.updatedAt,
-                __v: d.__v,
-                event_images: d.event_images,
-                organizer_detail: d.organizer_detail,
-                cancellation_penalty: d.cancellation_percentage,
-                platform_fees: d.platform_fees,
-              };
-              setEvent(mappedEvent);
-            } else {
-              setLoadError('Event not found');
-            }
-          } catch (e) {
-            console.error('Failed to load event detail', e);
-            setLoadError('Failed to load event');
-          } finally {
-            setIsLoadingEvent(false);
-          }
-        }
-      };
-      load();
-    }, [event, eventId]);
-
-    if (isLoadingEvent || !event) {
-      return (
-        <div className="min-h-[60vh] flex items-center justify-center text-gray-400">
-          {loadError || 'Loading event...'}
-        </div>
-      );
+  // Handle login redirect for checkout
+  React.useEffect(() => {
+    const state = location.state as { requireLogin?: boolean; redirectTo?: string } | undefined;
+    if (state?.requireLogin && !isAuthenticated) {
+      openLogin(state.redirectTo || location.pathname);
     }
-
-    return (
-      <BookingModal
-        event={event}
-        userPhone={user?.phone || ''}
-        onClose={() => navigate('/events')}
-        onNavigateToBookings={() => navigate('/bookings')}
-        onRequireLogin={() => openLogin(`/details/${event._id}`)}
-      />
-    );
-  };
+  }, [location.state, isAuthenticated, openLogin, location.pathname]);
 
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-brand-red selection:text-white">
@@ -426,10 +372,11 @@ const AppContent: React.FC = () => {
             }
           />
           <Route path="/events" element={<EventsPage onBookEvent={handleBookClick} />} />
+          <Route path="/event/details/:eventId" element={<EventDetailsPage />} />
+          <Route path="/event/:eventId/checkout" element={<CheckoutPage />} />
           <Route path="/about" element={<About />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/bookings" element={<MyBookings userId={user?._id || ''} />} />
-          <Route path="/details/:eventId" element={<EventDetailsRoute />} />
         </Routes>
       </main>
 
